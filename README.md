@@ -1,6 +1,6 @@
-# Advanced Neural Network 
+# Autoencoder 
 ###[Author: Hussain Mir Ali]
-An artificial neural network with single hidden layer and multiclass classification. This project has been written in JavaScript. The applications include disease prediction, optimizing workout routine and stock prediction. 
+An autoencoder neural network with single hidden layer and multiclass ouput. This project has been written in JavaScript. 
 
 ##External Librarbies Used:
 * csv-parse License: https://github.com/wdavidw/node-csv-parse/blob/master/LICENSE
@@ -15,9 +15,9 @@ An artificial neural network with single hidden layer and multiclass classificat
 
 ##Installation:
 *  Download the project and unzip it.
-*  Copy the 'advanced-neural-network' folder to your node_modules folder in your project directory.
-*  Require it using 'require('advanced-neural-network')' in your main JavaScript file.
-*  If you want to reinstall node_modules for this project then run 'sudo npm install -g" in your terminal under the 'advanced-neural-network' project directory.
+*  Copy the 'autoencoder' folder to your node_modules folder in your project directory.
+*  Require it using 'require('autoencoder')' in your main JavaScript file.
+*  If you want to reinstall node_modules for this project then run 'sudo npm install -g" in your terminal under the 'autoencoder' project directory.
 
 ##Testing:
 * For unit testing Mocha and Sinon have been used. 
@@ -32,7 +32,7 @@ An artificial neural network with single hidden layer and multiclass classificat
 ###Sample usage:
 
 ```javascript
-var NeuralNetwork = require('advanced-neural-network');
+var Autoencoder = require('autoencoder');
 var callback_data;
 
 var callback = function (data) {
@@ -40,23 +40,25 @@ var callback = function (data) {
     callback_data = data;
 };
 
-var nn =  new NeuralNetwork({
-        'path': undefined,/*optional path to save the weights*/
-        'hiddenLayerSize': 12,
-        'learningRate': 0.1,
-        'algorithm_mode': 0 /*This is to specify if  testing:0, cross validating:1 or training:2 data.*/ ,
-        'threshold': undefined /*optional threshold value*/ ,
-        'regularization_parameter': 0.001 /*optional regularization parameter to prevent overfitting*/ ,
+var an = new Autoencoder({
+        'path': path,
+        /*optional path to save the weights.*/
+        'hiddenLayerSize': 6,
+        'p': 0.05,/*Sparsity parameter.*/
+        'beta': 0.3,/*Weight of the sparsity term.*/
+        'learningRate': 0.9,
+        'algorithm_mode': 0 /*This is to specify if  testing:2, cross validating:1 or training:0 data.*/ ,
+        'threshold_value': undefined /*optional threshold value*/ ,
+        'regularization_parameter': 0.001 /*optional regularization parameter to prevent overfitting.*/ ,
         'optimization_mode': {
-          'mode': 1,
-          'batch_size': 2
-        } /*optional optimization mode for type of gradient descent. {mode:1, 'batch_size': <your size>} for mini-batch and {mode: 0} for batch.*/ ,
-        'notify_count': 10 /*optional value to execute the callback after every x number of iterations*/ ,
+          'mode': 0
+        } /*optional optimization mode for type of gradient descent.*/ ,
+        'notify_count': 10 /*optional value to execute the callback after every x number of iterations.*/ ,
         'iteration_callback': callback /*optional callback that can be used for getting cost and iteration value on every notify count.*/ ,
-        'maximum_iterations': 10000 /*optional maximum iterations to be allowed*/
+        'maximum_iterations': 500 /*optional maximum iterations to be allowed.*/
       });
 
-nn.train_network([
+an.train_network([
     [1, 0, 1, 1, 1, 1],
     [0, 1, 1, 0, 0, 0],
     [1, 0, 0, 1, 0, 1],
@@ -64,24 +66,13 @@ nn.train_network([
     [1, 1, 0, 1, 1, 1],
     [1, 0, 0, 1, 0, 1]
 ], [
-    [1,1,1],
-    [1,0,1],
-    [0,1,0],
-    [1,0,0],
-    [1,1,0],
-    [0,1,0]
-]).then(
-console.log(nn.cross_validate_network([   
-    [1, 1, 1, 1, 0, 1],
-    [0, 1, 0, 0, 1, 0]],[
-    [1,1,1],
-    [1,0,1]]
-    ))).then(
-console.log(nn.test_network([
-    [1, 1, 1, 1, 0, 1],
-    [0, 1, 0, 0, 1, 0]],
-    [[0,1,1],
-    [1,0,0]]))).then(console.log(nn.predict_result([[1,0,0,1,0,1]])));  
+    [1, 0, 1, 1, 1, 1],
+    [0, 1, 1, 0, 0, 0],
+    [1, 0, 0, 1, 0, 1],
+    [0, 0, 1, 0, 0, 0],
+    [1, 1, 0, 1, 1, 1],
+    [1, 0, 0, 1, 0, 1]
+]).then(console.log("\nTraining done!\n"));  
 
 */
 ```

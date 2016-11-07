@@ -1,11 +1,11 @@
 {
     "project": {},
     "files": {
-        "NeuralNetwork.js": {
-            "name": "NeuralNetwork.js",
+        "Autoencoder.js": {
+            "name": "Autoencoder.js",
             "modules": {},
             "classes": {
-                "NeuralNetwork": 1
+                "Autoencoder": 1
             },
             "fors": {},
             "namespaces": {}
@@ -13,22 +13,22 @@
     },
     "modules": {},
     "classes": {
-        "NeuralNetwork": {
-            "name": "NeuralNetwork",
-            "shortname": "NeuralNetwork",
+        "Autoencoder": {
+            "name": "Autoencoder",
+            "shortname": "Autoencoder",
             "classitems": [],
             "plugins": [],
             "extensions": [],
             "plugin_for": [],
             "extension_for": [],
-            "file": "NeuralNetwork.js",
+            "file": "Autoencoder.js",
             "line": 6,
-            "description": "The NeuralNetwork class contains all the necessary logic to train data for multiclass classification using single layer Neural Network.",
+            "description": "The Autoencoder class contains all the necessary logic to train data for multiclass classification using single layer Autoencoder.",
             "is_constructor": 1,
             "params": [
                 {
                     "name": "args",
-                    "description": "Contains all the necessary parameters for the neural network as listed below.",
+                    "description": "Contains all the necessary parameters for the Autoencoder as listed below.",
                     "type": "Object",
                     "props": [
                         {
@@ -44,6 +44,16 @@
                         {
                             "name": "threshold_value",
                             "description": "Optional threshold value for error.",
+                            "type": "Number"
+                        },
+                        {
+                            "name": "p",
+                            "description": "Sparsity parameter for the autoencoder.",
+                            "type": "Number"
+                        },
+                        {
+                            "name": "beta",
+                            "description": "Weight of the sparsity term.",
                             "type": "Number"
                         },
                         {
@@ -84,14 +94,14 @@
     "elements": {},
     "classitems": [
         {
-            "file": "NeuralNetwork.js",
+            "file": "Autoencoder.js",
             "line": 1,
-            "description": "Copyright (c) 2015-2016 Hussain Mir Ali",
-            "class": "NeuralNetwork"
+            "description": "Copyright (c) 2016-2017 Hussain Mir Ali",
+            "class": "Autoencoder"
         },
         {
-            "file": "NeuralNetwork.js",
-            "line": 44,
+            "file": "Autoencoder.js",
+            "line": 51,
             "description": "This method returns all the parameters passed to the constructor.",
             "itemtype": "method",
             "name": "getInitParams",
@@ -99,11 +109,11 @@
                 "description": "Returns the constructor parameters.",
                 "type": "Object"
             },
-            "class": "NeuralNetwork"
+            "class": "Autoencoder"
         },
         {
-            "file": "NeuralNetwork.js",
-            "line": 66,
+            "file": "Autoencoder.js",
+            "line": 75,
             "description": "This method serves as the logic for the sigmoid function.",
             "itemtype": "method",
             "name": "sigmoid",
@@ -118,12 +128,12 @@
                 "description": "Returns the elementwise sigmoid of the input matrix.",
                 "type": "Matrix"
             },
-            "class": "NeuralNetwork"
+            "class": "Autoencoder"
         },
         {
-            "file": "NeuralNetwork.js",
-            "line": 89,
-            "description": "This method is responsible for the forwardPropagation in the Neural Network.",
+            "file": "Autoencoder.js",
+            "line": 97,
+            "description": "This method is responsible for the forwardPropagation in the Autoencoder.",
             "itemtype": "method",
             "name": "forwardPropagation",
             "params": [
@@ -147,11 +157,23 @@
                 "description": "Returns the resultant ouput of forwardPropagation.",
                 "type": "Matrix"
             },
-            "class": "NeuralNetwork"
+            "class": "Autoencoder"
         },
         {
-            "file": "NeuralNetwork.js",
-            "line": 109,
+            "file": "Autoencoder.js",
+            "line": 118,
+            "description": "This method is responsible for calculating the Kullback-Leibler sum in the Autoencoder.",
+            "itemtype": "method",
+            "name": "kullback_leibler_sum",
+            "return": {
+                "description": "sum Returns the Kullback-Leibler sum.",
+                "type": "Number"
+            },
+            "class": "Autoencoder"
+        },
+        {
+            "file": "Autoencoder.js",
+            "line": 137,
             "description": "This method serves as the logic for the sigmoid function derivative.",
             "itemtype": "method",
             "name": "sigmoid_Derivative",
@@ -166,11 +188,11 @@
                 "description": "Returns the elementwise sigmoid derivative of the input matrix.",
                 "type": "Matrix"
             },
-            "class": "NeuralNetwork"
+            "class": "Autoencoder"
         },
         {
-            "file": "NeuralNetwork.js",
-            "line": 127,
+            "file": "Autoencoder.js",
+            "line": 154,
             "description": "This method is responsible for the costFunction, i.e. error.",
             "itemtype": "method",
             "name": "costFunction",
@@ -195,11 +217,11 @@
                 "description": "Returns the resultant cost.",
                 "type": "Number"
             },
-            "class": "NeuralNetwork"
+            "class": "Autoencoder"
         },
         {
-            "file": "NeuralNetwork.js",
-            "line": 192,
+            "file": "Autoencoder.js",
+            "line": 219,
             "description": "This method is responsible for the costFunction_Derivative, i.e. gradient of error with respect to weights.",
             "itemtype": "method",
             "name": "costFunction_Derivative",
@@ -226,21 +248,21 @@
                 }
             ],
             "return": {
-                "description": "Returns the resultant gradients with respect to layer 1: dJdW1 and layer 2: dJdW2 of the Neural Network.",
+                "description": "Returns the resultant gradients with respect to layer 1: dJdW1 and layer 2: dJdW2 of the Autoencoder.",
                 "type": "Array"
             },
-            "class": "NeuralNetwork"
+            "class": "Autoencoder"
         },
         {
-            "file": "NeuralNetwork.js",
-            "line": 236,
-            "description": "This method is responsible for saving the trained weights of the Neural Network to text files at specified path.",
+            "file": "Autoencoder.js",
+            "line": 286,
+            "description": "This method is responsible for saving the trained weights of the Autoencoder to text files at specified path.",
             "itemtype": "method",
             "name": "saveWeights",
             "params": [
                 {
                     "name": "weights",
-                    "description": "The weights of the layer1 and layer2 of the Neural Network.",
+                    "description": "The weights of the layer1 and layer2 of the Autoencoder.",
                     "type": "Array"
                 },
                 {
@@ -253,11 +275,11 @@
                 "description": "Returns true after succesfuly saving the weights.",
                 "type": "Boolean"
             },
-            "class": "NeuralNetwork"
+            "class": "Autoencoder"
         },
         {
-            "file": "NeuralNetwork.js",
-            "line": 258,
+            "file": "Autoencoder.js",
+            "line": 308,
             "description": "This method is responsible for the optimization of weights, i.e. BackPropagation algorithm.",
             "itemtype": "method",
             "name": "gradientDescent",
@@ -287,11 +309,11 @@
                 "description": "Returns a resolved promise with iteration and cost data on successful completion of optimization.",
                 "type": "Object"
             },
-            "class": "NeuralNetwork"
+            "class": "Autoencoder"
         },
         {
-            "file": "NeuralNetwork.js",
-            "line": 320,
+            "file": "Autoencoder.js",
+            "line": 370,
             "description": "This method is responsible for creating layers and initializing random weights.",
             "itemtype": "method",
             "name": "train_network",
@@ -311,11 +333,11 @@
                 "description": "Returns a resolved promise with iteration and cost data on successful completion of optimization.",
                 "type": "Object"
             },
-            "class": "NeuralNetwork"
+            "class": "Autoencoder"
         },
         {
-            "file": "NeuralNetwork.js",
-            "line": 352,
+            "file": "Autoencoder.js",
+            "line": 402,
             "description": "This contains logic to predict result for a given input after training on data.",
             "itemtype": "method",
             "name": "predict_result",
@@ -330,12 +352,12 @@
                 "description": "Returns the resultant matrix after performing forwardPropagation on saved weights.",
                 "type": "Matrix"
             },
-            "class": "NeuralNetwork"
+            "class": "Autoencoder"
         },
         {
-            "file": "NeuralNetwork.js",
-            "line": 367,
-            "description": "This method is responsible for setting weights of the Neural Network from a specified path.",
+            "file": "Autoencoder.js",
+            "line": 417,
+            "description": "This method is responsible for setting weights of the Autoencoder from a specified path.",
             "itemtype": "method",
             "name": "setWeights",
             "params": [
@@ -349,61 +371,13 @@
                 "description": "Returns a resolved promise after successfuly setting weights.",
                 "type": "Object"
             },
-            "class": "NeuralNetwork"
-        },
-        {
-            "file": "NeuralNetwork.js",
-            "line": 420,
-            "description": "This method is responsible for producing the cross validation error after training data.",
-            "itemtype": "method",
-            "name": "cross_validate_network",
-            "params": [
-                {
-                    "name": "X",
-                    "description": "The input matrix representing the features of the cross validation set.",
-                    "type": "Matrix"
-                },
-                {
-                    "name": "Y",
-                    "description": "The output matrix corresponding to training data of the cross validation set.",
-                    "type": "Matrix"
-                }
-            ],
-            "return": {
-                "description": "Returns an error value associated with the cross validation.",
-                "type": "Number"
-            },
-            "class": "NeuralNetwork"
-        },
-        {
-            "file": "NeuralNetwork.js",
-            "line": 434,
-            "description": "This method is responsible for producing the test error after training data.",
-            "itemtype": "method",
-            "name": "test_network",
-            "params": [
-                {
-                    "name": "X",
-                    "description": "The input matrix representing the features of the test set.",
-                    "type": "Matrix"
-                },
-                {
-                    "name": "Y",
-                    "description": "The output matrix corresponding to training data of the test set.",
-                    "type": "Matrix"
-                }
-            ],
-            "return": {
-                "description": "Returns an error value associated with testing.",
-                "type": "Number"
-            },
-            "class": "NeuralNetwork"
+            "class": "Autoencoder"
         }
     ],
     "warnings": [
         {
-            "message": "Missing item type\nCopyright (c) 2015-2016 Hussain Mir Ali",
-            "line": " NeuralNetwork.js:1"
+            "message": "Missing item type\nCopyright (c) 2016-2017 Hussain Mir Ali",
+            "line": " Autoencoder.js:1"
         }
     ]
 }

@@ -2,19 +2,38 @@ var Autoencoder = require('../Autoencoder');
 var assert = require('assert');
 var mathJS = require('mathjs');
 var sinon = require('sinon');
-var parse = require('csv-parse');
 
 describe('Autoencoder', function() {
 
-  var callback_data, path = new Array(__dirname + "/Test_Weights_Layer1.txt", __dirname + "/Test_Weights_Layer2.txt");
+  global.localStorage = (function() {
+    var storage = {};
 
+    return {
+      setItem: function(key, value) {
+        storage[key] = value || '';
+      },
+      getItem: function(key) {
+        return storage[key] || null;
+      },
+      removeItem: function(key) {
+        delete storage[key];
+      },
+      get length() {
+        return Object.keys(storage).length;
+      },
+      key: function(i) {
+        var keys = Object.keys(storage);
+        return keys[i] || null;
+      }
+    };
+  })();
+
+  var callback_data;
   var callback = function(data) {
     callback_data = data;
   };
 
   var nn = new Autoencoder({
-    'path': path,
-    /*optional path to save the weights*/
     'hiddenLayerSize': 6,
     'learningRate': 0.9,
     'p': 0.05,
@@ -33,8 +52,6 @@ describe('Autoencoder', function() {
   var getInitParams = nn.getInitParams();
 
   it("should correctly set parameters", function() {
-    assert.deepStrictEqual(getInitParams.path[0], __dirname + '/Test_Weights_Layer1.txt');
-    assert.deepStrictEqual(getInitParams.path[1], __dirname + '/Test_Weights_Layer2.txt');
     assert.deepStrictEqual(getInitParams.learningRate, 0.9);
     assert.deepStrictEqual(getInitParams.p, 0.05);
     assert.deepStrictEqual(getInitParams.beta, 0.3);
@@ -56,16 +73,13 @@ describe('Autoencoder', function() {
       W2 = (mathJS.random(mathJS.matrix([10, 3]), -5, 5));
 
     it('should successfuly save weights', function() {
-      assert.equal(nn.saveWeights([W1, W2], path), true);
+      nn.saveWeights([W1, W2]);
+      assert.deepStrictEqual(global.localStorage.getItem("Weights"), [W1, W2]);
     });
 
     it('should successfuly set weights', function(done) {
-      var success = true;
-      nn.setWeights(path).then(function(promise_data) {
-        assert.equal(promise_data.success, true);
-        done();
-      });
-
+       assert.deepStrictEqual(nn.setWeights(),[W1, W2]);
+       done();
     });
 
   });
@@ -398,8 +412,6 @@ describe('Autoencoder', function() {
       };
 
       var nn_mode1 = new Autoencoder({
-        'path': path,
-        /*optional path to save the weights.*/
         'hiddenLayerSize': 6,
         'p': 0.05,/*Sparsity parameter.*/
         'beta': 0.3,/*Weight of the sparsity term.*/
@@ -419,8 +431,6 @@ describe('Autoencoder', function() {
       var getInitParams_mode1 = nn_mode1.getInitParams();
 
       it("should correctly set parameters with mode: 1", function() {
-        assert.deepStrictEqual(getInitParams_mode1.path[0], __dirname + '/Test_Weights_Layer1.txt');
-        assert.deepStrictEqual(getInitParams_mode1.path[1], __dirname + '/Test_Weights_Layer2.txt');
         assert.deepStrictEqual(getInitParams_mode1.learningRate, 0.9);
         assert.deepStrictEqual(getInitParams_mode1.hiddenLayerSize, 6);
         assert.deepStrictEqual(getInitParams.p, 0.05);

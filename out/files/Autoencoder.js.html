@@ -85,13 +85,16 @@ Copyright (c) 2016-2017 Hussain Mir Ali
 **/
 &quot;use strict&quot;;
 
+var window_object = (function(g){
+      return g;
+  }(this));
+
 /**
  * The Autoencoder class contains all the necessary logic to train data for multiclass classification using single layer Autoencoder.
  *
  * @class Autoencoder
  * @constructor
  * @param {Object} args Contains all the necessary parameters for the Autoencoder as listed below.
- * @param {String} args.path optional Path to save the weights.
  * @param {Number} args.learningRate Learning rate for BackPropogation.
  * @param {Number} args.threshold_value Optional threshold value for error. 
  * @param {Number} args.p Sparsity parameter for the autoencoder. 
@@ -107,12 +110,16 @@ Copyright (c) 2016-2017 Hussain Mir Ali
 class Autoencoder {
 
   constructor(args){
-  this.fs = require(&#x27;fs&#x27;);
-  this.parse = require(&#x27;csv-parse&#x27;);
-  this.MathJS = require(&#x27;mathjs&#x27;);
-  this.q = require(&#x27;q&#x27;);
+   if(Object.keys(window_object).length === 0){
+        this.MathJS = require(&#x27;mathjs&#x27;);
+        this.q = require(&#x27;q&#x27;);
+    }
+    else{
+        this.MathJS = math;
+        this.q = Q;
+    }
+
   this.initArgs = args;
-  this.path = args.path || new Array(__dirname + &#x27;/data/Weights_Layer1.txt&#x27;, __dirname + &#x27;/data/Weights_Layer2.txt&#x27;);
   this.threshold = args.threshold || (1 / this.MathJS.exp(3));
   this.algorithm_mode = 0;
   this.iteration_callback = args.iteration_callback;
@@ -140,7 +147,6 @@ class Autoencoder {
 getInitParams() {
   return {
     &#x27;algorithm_mode&#x27;: this.algorithm_mode,
-    &#x27;path&#x27;: this.path,
     &#x27;beta&#x27;: this.beta,
     &#x27;p&#x27;: this.p,
     &#x27;hiddenLayerSize&#x27;: this.hiddenLayerSize,
@@ -366,23 +372,20 @@ costFunction_Derivative(X, Y, W1, W2) {
 }
 
 /**
- *This method is responsible for saving the trained weights of the Autoencoder to text files at specified path.
+ *This method is responsible for saving the trained weights of the Autoencoder.
  *
  * @method saveWeights 
  * @param {Array} weights The weights of the layer1 and layer2 of the Autoencoder.
- * @param {String} path The path at wich the weights are to be saved.
  * @return {Boolean} Returns true after succesfuly saving the weights.
  */
-saveWeights(weights, path) {
+saveWeights(weights) {
   var defered = this.q.defer();
-
-  try {
-    this.fs.writeFileSync(path[0], weights[0].toString().replace(/\]\,\s\[/g, &quot;\n&quot;).replace(&quot;[[&quot;, &quot;&quot;).replace(&quot;]]&quot;, &quot;&quot;));
-    this.fs.writeFileSync(path[1], weights[1].toString().replace(/\]\,\s\[/g, &quot;\n&quot;).replace(&quot;[[&quot;, &quot;&quot;).replace(&quot;]]&quot;, &quot;&quot;));
-  } catch (e) {
-    return false;
+  if(Object.keys(window_object).length === 0){
+    global.localStorage.setItem(&quot;Weights&quot;, weights);
   }
-
+  else{
+    localStorage.setItem(&quot;Weights&quot;, weights);
+  }
   console.log(&quot;\nWeights were successfuly saved.&quot;);
   return true;
 }
@@ -407,7 +410,6 @@ gradientDescent(X, Y, W1, W2) {
     cost,
     scope = {},
     defered = this.q.defer(),
-    path = this.path,
     i = 1;
 
   if (this.algorithm_mode == 0)
@@ -440,7 +442,7 @@ gradientDescent(X, Y, W1, W2) {
     }
     i++;
     if (i &gt; this.maximum_iterations || cost &lt;= (this.threshold)) {
-      this.saveWeights([this.W1, this.W2], path);
+      this.saveWeights([this.W1, this.W2]);
       defered.resolve([cost, i]);
       break;
     }
@@ -491,67 +493,38 @@ train_network(X, Y) {
 
 predict_result(X) {
   var y_result;
-  this.setWeights(this.path);
+  this.setWeights();
   y_result = this.forwardPropagation(X);
   return y_result;
 }
 
 /**
- *This method is responsible for setting weights of the Autoencoder from a specified path.
+ *This method is responsible for setting weights of the Autoencoder.
  *
  * @method setWeights 
- * @param {String} path The path where the trained weights are to be found.
  * @return {Object} Returns a resolved promise after successfuly setting weights.
  */
-setWeights(path) {
-  var contents_layer1, contents_layer2;
-  var dataA = this.fs.readFileSync(path[0], &#x27;utf8&#x27;);
-  var dataB = this.fs.readFileSync(path[1], &#x27;utf8&#x27;);
-  var self = this,
-    success;
+setWeights() {
+  var self = this;
+  var weights;
+    if(Object.keys(window_object).length === 0){
+       weights = global.localStorage.getItem(&quot;Weights&quot;);
+    }else{
+       weights = localStorage.getItem(&quot;Weights&quot;);
+     }
 
-  return (function() {
-    var defered = self.q.defer();
-    self.parse(dataA, {}, function(err, array) {
-      if (err) {
-        throw (err);
-      }
-      defered.resolve();
-      contents_layer1 = self.MathJS.matrix(array);
-    })
+     self.W1 = weights[0];
+     self.W2 = weights[1];
 
-    return defered.promise;
-  })().then(
-    function() {
-
-      var defered = self.q.defer();
-
-      self.parse(dataB, {}, function(err, array) {
-        if (err) {
-          throw (err);
-        }
-        contents_layer2 = self.MathJS.matrix(array);
-        if (contents_layer1 !== undefined &amp;&amp; contents_layer2 !== undefined) {
-          self.W1 = (contents_layer1);
-          self.W2 = (contents_layer2);
-          defered.resolve({
-            &#x27;success&#x27;: true
-          });
-        } else {
-          defered.reject({
-            &#x27;success&#x27;: false
-          });
-        }
-      });
-
-      return defered.promise;
-
-    });
+     return [self.W1, self.W2];
+}
 }
 
+if(Object.keys(window_object).length === 0){
+    module.exports = Autoencoder;
+}else{
+    window[&#x27;Autoencoder&#x27;] = Autoencoder;
 }
-module.exports = Autoencoder;
-
     </pre>
 </div>
                     </div>

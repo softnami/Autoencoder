@@ -299,10 +299,10 @@ costFunction_Derivative(X, Y, W1, W2) {
 saveWeights(weights) {
   var defered = this.q.defer();
   if(Object.keys(window_object).length === 0){
-    global.localStorage.setItem("Weights", weights);
+    global.localStorage.setItem("Weights", JSON.stringify(weights));
   }
   else{
-    localStorage.setItem("Weights", weights);
+    localStorage.setItem("Weights", JSON.stringify(weights));
   }
   console.log("\nWeights were successfuly saved.");
   return true;
@@ -426,15 +426,15 @@ setWeights() {
   var self = this;
   var weights;
     if(Object.keys(window_object).length === 0){
-       weights = global.localStorage.getItem("Weights");
+       weights = JSON.parse(global.localStorage.getItem("Weights"));
     }else{
-       weights = localStorage.getItem("Weights");
+       weights = JSON.parse(localStorage.getItem("Weights"));
      }
 
-     self.W1 = weights[0];
-     self.W2 = weights[1];
+     self.W1 = this.MathJS.matrix(weights[0].data);
+     self.W2 = this.MathJS.matrix(weights[1].data);
 
-     return [self.W1, self.W2];
+     return [self.W1._data, self.W2._data];
 }
 }
 

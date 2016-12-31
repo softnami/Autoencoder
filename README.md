@@ -15,7 +15,7 @@ An autoencoder neural network with single hidden layer and multiclass ouput. Thi
 
 ##Installation:
 *  Download the project and unzip it.
-*  Copy the 'Autoencoder' folder to your project directory.
+*  Copy the 'autoencoder' folder to your project directory.
 
 
 ##Testing:
@@ -44,12 +44,11 @@ var an = new window.Autoencoder({
         'p': 0.05,/*Sparsity parameter.*/
         'beta': 0.3,/*Weight of the sparsity term.*/
         'learningRate': 0.9,
-        'algorithm_mode': 0 /*This is to specify if  testing:2, cross validating:1 or training:0 data.*/ ,
         'threshold_value': undefined /*optional threshold value*/ ,
         'regularization_parameter': 0.001 /*optional regularization parameter to prevent overfitting.*/ ,
         'optimization_mode': {
           'mode': 0
-        } /*optional optimization mode for type of gradient descent.*/ ,
+        } /*optional optimization mode for type of gradient descent. {'mode': 0} for batch gradient descent and     {'mode':1, 'batch_size': <your batch size>} for mini-batch gradient descent.*/ ,
         'notify_count': 10 /*optional value to execute the callback after every x number of iterations.*/ ,
         'iteration_callback': callback /*optional callback that can be used for getting cost and iteration value on every notify count.*/ ,
         'maximum_iterations': 500 /*optional maximum iterations to be allowed.*/

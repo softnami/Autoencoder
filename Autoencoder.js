@@ -163,7 +163,7 @@ sigmoid_Derivative(z) {
  * @method costFunction 
  * @param {matrix} X The input matrix representing the features.
  * @param {matrix} Y The output matrix corresponding to training data.
- * @param {Number} algorithm_mode The current algorithm mode (testing: 2, crossvalidating: 1, training: 0).
+ * @param {Number} algorithm_mode The current algorithm mode (training: 0).
  * @return {Number} Returns the resultant cost.
  */
 costFunction(X, Y, algorithm_mode) {

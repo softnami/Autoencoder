@@ -245,7 +245,7 @@ sigmoid_Derivative(z) {
  * @method costFunction 
  * @param {matrix} X The input matrix representing the features.
  * @param {matrix} Y The output matrix corresponding to training data.
- * @param {Number} algorithm_mode The current algorithm mode (testing: 2, crossvalidating: 1, training: 0).
+ * @param {Number} algorithm_mode The current algorithm mode (training: 0).
  * @return {Number} Returns the resultant cost.
  */
 costFunction(X, Y, algorithm_mode) {
@@ -381,10 +381,10 @@ costFunction_Derivative(X, Y, W1, W2) {
 saveWeights(weights) {
   var defered = this.q.defer();
   if(Object.keys(window_object).length === 0){
-    global.localStorage.setItem(&quot;Weights&quot;, weights);
+    global.localStorage.setItem(&quot;Weights&quot;, JSON.stringify(weights));
   }
   else{
-    localStorage.setItem(&quot;Weights&quot;, weights);
+    localStorage.setItem(&quot;Weights&quot;, JSON.stringify(weights));
   }
   console.log(&quot;\nWeights were successfuly saved.&quot;);
   return true;
@@ -508,15 +508,15 @@ setWeights() {
   var self = this;
   var weights;
     if(Object.keys(window_object).length === 0){
-       weights = global.localStorage.getItem(&quot;Weights&quot;);
+       weights = JSON.parse(global.localStorage.getItem(&quot;Weights&quot;));
     }else{
-       weights = localStorage.getItem(&quot;Weights&quot;);
+       weights = JSON.parse(localStorage.getItem(&quot;Weights&quot;));
      }
 
-     self.W1 = weights[0];
-     self.W2 = weights[1];
+     self.W1 = this.MathJS.matrix(weights[0].data);
+     self.W2 = this.MathJS.matrix(weights[1].data);
 
-     return [self.W1, self.W2];
+     return [self.W1._data, self.W2._data];
 }
 }
 
@@ -525,6 +525,7 @@ if(Object.keys(window_object).length === 0){
 }else{
     window[&#x27;Autoencoder&#x27;] = Autoencoder;
 }
+
     </pre>
 </div>
                     </div>

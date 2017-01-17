@@ -78,9 +78,9 @@ an.train_network([
   <head>
   </head>
   <body >
-        <script src="Autoencoder/lib/q.js"></script>
-        <script src="Autoencoder/lib/math.js"></script>
-        <script src="Autoencoder/Autoencoder.js"></script>
+        <script src="autoencoder/lib/q.js"></script>
+        <script src="autoencoder/lib/math.js"></script>
+        <script src="autoencoder/Autoencoder.js"></script>
 	<!--Include the main.js file where you use the algorithm.-->
         <script src="main.js"></script>
 </body>

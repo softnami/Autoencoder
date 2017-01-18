@@ -2,7 +2,7 @@
 ###[Author: Hussain Mir Ali]
 An autoencoder neural network with single hidden layer and multiclass ouput. This project has been written in JavaScript. 
 
-##External Librarbies Used:
+##External Libraries Used:
 * mathjs License: https://github.com/josdejong/mathjs/blob/master/LICENSE
 * mocha License: https://github.com/mochajs/mocha/blob/master/LICENSE
 * sinon Licencse: https://github.com/sinonjs/sinon/blob/master/LICENSE
@@ -16,17 +16,6 @@ An autoencoder neural network with single hidden layer and multiclass ouput. Thi
 ##Installation:
 *  Download the project and unzip it.
 *  Copy the 'autoencoder' folder to your project directory.
-
-
-##Testing:
-* For unit testing Mocha and Sinon have been used. 
-* On newer computers run the command 'mocha --timeout 50000', the 50000 ms timeout is to give enough time for tests to complete as they might not process before timeout. 
-* On older computers run the command 'mocha --timeout 300000', the 300000 ms timeout is to give enough time for tests to complete as they might not process before timeout on older computers. 
-* If need be more than 300000 ms should be used to run the tests depending on the processing power of the computer. 
-
-##Documentation
-*  The documentation is available in the 'out' folder of this project. Open the 'index.html' file under the 'out' folder with Crhome or Firefox.
-*  To generate the documentation run 'yuidoc .' command in the main directory of this project.
 
 ###Sample usage:
 
@@ -88,3 +77,13 @@ an.train_network([
 
 */
 ```
+
+##Testing:
+* For unit testing Mocha and Sinon have been used. 
+* On newer computers run the command 'mocha --timeout 50000', the 50000 ms timeout is to give enough time for tests to complete as they might not process before timeout. 
+* On older computers run the command 'mocha --timeout 300000', the 300000 ms timeout is to give enough time for tests to complete as they might not process before timeout on older computers. 
+* If need be more than 300000 ms should be used to run the tests depending on the processing power of the computer. 
+
+##Documentation
+*  The documentation is available in the 'out' folder of this project. Open the 'index.html' file under the 'out' folder with Crhome or Firefox.
+*  To generate the documentation run 'yuidoc .' command in the main directory of this project.

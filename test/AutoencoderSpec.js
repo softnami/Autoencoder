@@ -1,12 +1,14 @@
-var Autoencoder = require('../Autoencoder');
-var assert = require('assert');
-var mathJS = require('mathjs');
-var sinon = require('sinon');
+'use strict';
+
+let Autoencoder = require('../Autoencoder');
+let assert = require('assert');
+let mathJS = require('mathjs');
+let sinon = require('sinon');
 
 describe('Autoencoder', function() {
 
   global.localStorage = (function() {
-    var storage = {};
+    let storage = {};
 
     return {
       setItem: function(key, value) {
@@ -22,18 +24,18 @@ describe('Autoencoder', function() {
         return Object.keys(storage).length;
       },
       key: function(i) {
-        var keys = Object.keys(storage);
+        let keys = Object.keys(storage);
         return keys[i] || null;
       }
     };
   })();
 
-  var callback_data;
-  var callback = function(data) {
+  let callback_data;
+  let callback = function(data) {
     callback_data = data;
   };
 
-  var nn = new Autoencoder({
+  let nn = new Autoencoder({
     'hiddenLayerSize': 6,
     'learningRate': 0.9,
     'p': 0.05,
@@ -49,7 +51,7 @@ describe('Autoencoder', function() {
     'maximum_iterations': 500 /*optional maximum iterations to be allowed*/
   });
 
-  var getInitParams = nn.getInitParams();
+  let getInitParams = nn.getInitParams();
 
   it("should correctly set parameters", function() {
     assert.deepStrictEqual(getInitParams.learningRate, 0.9);
@@ -68,18 +70,20 @@ describe('Autoencoder', function() {
   });
 
   describe('when saving and setting weights', function() {
-
     
-    var W1 = (mathJS.random(mathJS.matrix([9, 10]), -5, 5)),
+    let W1 = (mathJS.random(mathJS.matrix([9, 10]), -5, 5)),
       W2 = (mathJS.random(mathJS.matrix([10, 3]), -5, 5));
 
+    let bias_layer1 = mathJS.ones(2, 10)
+        ,bias_layer2 = mathJS.ones(2, 10);
+
     it('should successfuly save weights', function() {
-      nn.saveWeights([W1, W2]);
+      nn.saveWeights([W1, W2],[bias_layer1, bias_layer2]);
       assert.deepStrictEqual([JSON.parse(global.localStorage.getItem("Weights"))[0].data, JSON.parse(global.localStorage.getItem("Weights"))[1].data], [W1._data, W2._data]);
     });
 
     it('should successfuly set weights', function(done) {
-       assert.deepStrictEqual(nn.setWeights(),[W1._data, W2._data]);
+       assert.deepStrictEqual(nn.setWeights(),[W1._data, W2._data, bias_layer1, bias_layer2]);
        done();
     });
 
@@ -87,22 +91,22 @@ describe('Autoencoder', function() {
 
   describe('when training', function() {
 
-    var W1 = (mathJS.random(mathJS.matrix([10, 6]), -5, 5)), W2 = (mathJS.random(mathJS.matrix([6, 10]), -5, 5));
-    var X = (mathJS.random(mathJS.matrix([10, 10]), 0, 1));
-    var Y = X;
-    var y_result, z3, a2, z2, p_prime;
+    let W1 = (mathJS.random(mathJS.matrix([10, 6]), -5, 5)), W2 = (mathJS.random(mathJS.matrix([6, 10]), -5, 5));
+    let X = (mathJS.random(mathJS.matrix([10, 10]), 0, 1));
+    let Y = X;
+    let y_result, z3, a2, z2, p_prime;
 
     it("should correctly run sigmoid()", function() {
-      var X = (mathJS.random(mathJS.matrix([10, 3]), 0, 1));
-      var sigX = nn.sigmoid(X),
+      let X = (mathJS.random(mathJS.matrix([10, 3]), 0, 1));
+      let sigX = nn.sigmoid(X),
         i, j;
-      var ones = mathJS.ones(X.size()[0], X.size()[1]);
-      var success = false;
-      var scope = {
+      let ones = mathJS.ones(X.size()[0], X.size()[1]);
+      let success = false;
+      let scope = {
         'z': X,
         'ones': ones
       };
-      var refSigX = mathJS.eval('(ones+(e.^(z.*-1))).^-1', scope); //1/(1+e^(-z))
+      let refSigX = mathJS.eval('(ones+(e.^(z.*-1))).^-1', scope); //1/(1+e^(-z))
 
       for (i = 0; i < sigX.size()[0]; i++) {
         for (j = 0; j < sigX.size()[1]; j++) {
@@ -121,16 +125,16 @@ describe('Autoencoder', function() {
     });
 
     it("should correctly run sigmoid_Derivative()", function() {
-      var X = (mathJS.random(mathJS.matrix([10, 3]), 0, 1));
-      var sigX = nn.sigmoid_Derivative(X),
+      let X = (mathJS.random(mathJS.matrix([10, 3]), 0, 1));
+      let sigX = nn.sigmoid_Derivative(X),
         i, j;
-      var ones = mathJS.ones(X.size()[0], X.size()[1]);
-      var success = false;
-      var scope = {
+      let ones = mathJS.ones(X.size()[0], X.size()[1]);
+      let success = false;
+      let scope = {
         'z': X,
         'ones': ones
       };
-      var refSigX = mathJS.eval('(e.^(z.*-1))./(ones+(e.^(z.*-1))).^2', scope); //(1+e^(-z))/(1+e^(-z))^2
+      let refSigX = mathJS.eval('(e.^(z.*-1))./(ones+(e.^(z.*-1))).^2', scope); //(1+e^(-z))/(1+e^(-z))^2
 
       for (i = 0; i < sigX.size()[0]; i++) {
         for (j = 0; j < sigX.size()[1]; j++) {
@@ -149,14 +153,19 @@ describe('Autoencoder', function() {
 
     it("should correctly run forwardPropagation()", function() {
 
-      y_result = nn.forwardPropagation(X, W1, W2);
+      let scope = {};
+      y_result = nn.forwardPropagation(X, W1, W2, 1, 1);
       z2 = mathJS.multiply(X, W1);
+      scope.z2 = z2;
+      z2 = mathJS.eval('z2+1', scope);
       a2 = nn.sigmoid(z2);
       z3 = mathJS.multiply(a2, W2);
+      scope.z3 = z3;
+      z3 = mathJS.eval('z3+1', scope);      
       p_prime = mathJS.mean(a2,0);
-      var y_resultRef = nn.sigmoid(z3);
-      var i, j;
-      var success = false;
+      let y_resultRef = nn.sigmoid(z3);
+      let i, j;
+      let success = false;
 
       for (i = 0; i < y_resultRef.size()[0]; i++) {
         for (j = 0; j < y_resultRef.size()[1]; j++) {
@@ -172,32 +181,27 @@ describe('Autoencoder', function() {
       }
 
       assert.equal(success, true);
-
     });
 
     it("should correctly run costFunction()", function() {
 
-      var scope = {
+     let scope = {
         'y_result': y_result,
         'y': Y,
         'x': X,
         'W1': W1,
         'W2': W2
       };
+      let success = true;
 
-      var success = true;
-      var J1 = (mathJS.sum(mathJS.eval('0.5*((y-y_result).^2)', scope)) / (scope.x.size()[0])) + getInitParams.beta*nn.kullback_leibler_sum(),
-        J2 = mathJS.sum(mathJS.eval('0.5*((y-y_result).^2)', scope)) / (scope.x.size()[0]) + (getInitParams.regularization_param / 2) * (mathJS.sum(mathJS.eval('W1.^2', scope)) + mathJS.sum(mathJS.eval('W2.^2', scope)))+ getInitParams.beta*nn.kullback_leibler_sum(); //regularization parameter
+      let J1 = mathJS.sum(mathJS.eval('0.5*((y-y_result).^2)', scope)) / (scope.x.size()[0]) + (getInitParams.regularization_param / 2) * (mathJS.sum(mathJS.eval('W1.^2', scope)) + mathJS.sum(mathJS.eval('W2.^2', scope))); //regularization parameter
+          J1 = J1 + 0.3*nn.kullback_leibler_sum()
 
-      var cost1 = nn.costFunction(X, Y, 0);
-      var cost2 = nn.costFunction(X, Y, 1);
-      var cost3 = nn.costFunction(X, Y, 2);
+       nn.setBias(mathJS.matrix([mathJS.ones(6)._data]), mathJS.matrix([mathJS.ones(Y.size()[1])._data]));
 
-      if (cost1 !== J2)
-        success = false;
-      if (cost2 !== J1 || cost3 !== J1)
-        success = false;
-      if (cost2 !== cost3)
+      let cost1 = nn.costFunction(X, Y, W1, W2,0);
+     
+      if (cost1 !== J1)
         success = false;
 
       assert.equal(success, true);
@@ -206,7 +210,7 @@ describe('Autoencoder', function() {
 
    it("should correctly run kullback_leibler_sum()", function() {
 
-      var scope = {}, sum_ref, kl_matrix, sum;
+      let scope = {}, sum_ref, kl_matrix, sum;
       scope.ones = mathJS.ones([a2.size()[1]]);
       scope.p = getInitParams.p;
       scope.p = mathJS.eval('ones.*p', scope);
@@ -223,9 +227,9 @@ describe('Autoencoder', function() {
 
    it("should call kullback_leibler_sum() while running costFunction()", function(done) {
 
-      var success = true;
-      var spy = sinon.spy(nn, "kullback_leibler_sum");
-      var cost1 = nn.costFunction(X, Y, 0);
+      let success = true;
+      let spy = sinon.spy(nn, "kullback_leibler_sum");
+      let cost1 = nn.costFunction(X, Y, 0);
 
       if (!spy.called)
       success = false;
@@ -235,7 +239,7 @@ describe('Autoencoder', function() {
     });
 
     it("should correctly run costFunction_Derivative()", function() {
-      var scope = {};
+      let scope = {};
       scope.y_result = y_result;
       scope.y = Y;
       scope.diff = mathJS.eval('-(y-y_result)', scope);
@@ -244,10 +248,10 @@ describe('Autoencoder', function() {
       scope.W2 = W2;
       scope.W1 = W1;
       scope.m = X.size()[0];
-      var success = false;
+      let success = false;
 
-      var del_3 = mathJS.eval('diff.*sigmoid_Derivative_z3', scope);
-      var dJdW2 = mathJS.multiply(mathJS.transpose(a2), del_3);
+      let del_3 = mathJS.eval('diff.*sigmoid_Derivative_z3', scope);
+      let dJdW2 = mathJS.multiply(mathJS.transpose(a2), del_3);
       scope.dJdW2 = dJdW2;
       scope.regularization_term_dJdW2 = mathJS.eval('W2.*regularization_param', scope);
       dJdW2 = mathJS.eval('dJdW2.*(1/m) + regularization_term_dJdW2', scope);
@@ -262,7 +266,7 @@ describe('Autoencoder', function() {
       scope.kl_term = mathJS.eval('(((p./p_prime).*-1)+((1-p)./(1-p_prime))).*beta', scope);
       scope.kl_matrix = [];
 
-      for (var i = 0; i < scope.arrA.size()[0]; i++) {
+      for (let i = 0; i < scope.arrA.size()[0]; i++) {
         scope.kl_matrix.push(scope.kl_term);
       }
 
@@ -271,14 +275,14 @@ describe('Autoencoder', function() {
       scope.arrA = mathJS.eval('arrA+kl_matrix', scope);
       scope.arrB = nn.sigmoid_Derivative(z2);
 
-      var del_2 = mathJS.eval('arrA.*arrB', scope);
-      var dJdW1 = mathJS.multiply(mathJS.transpose(X), del_2);
+      let del_2 = mathJS.eval('arrA.*arrB', scope);
+      let dJdW1 = mathJS.multiply(mathJS.transpose(X), del_2);
       scope.dJdW1 = dJdW1;
       scope.regularization_term_dJdW1 = mathJS.eval('W1.*regularization_param', scope);
       dJdW1 = mathJS.eval('dJdW1.*(1/m) + regularization_term_dJdW1', scope);
 
-      var dJdWRef = nn.costFunction_Derivative(X, Y, W1, W2);
-      var i, j;
+      let dJdWRef = nn.costFunction_Derivative(X, Y, W1, W2);
+      let i, j;
 
       for (i = 0; i < dJdW1.size()[0]; i++) {
         for (j = 0; j < dJdW1.size()[1]; j++) {
@@ -311,8 +315,8 @@ describe('Autoencoder', function() {
     });
 
     it("should call saveWeights() while running gradientDescent()", function(done) {
-      var success = true;
-      var spy = sinon.spy(nn, "saveWeights");
+      let success = true;
+      let spy = sinon.spy(nn, "saveWeights");
       spy.withArgs([W1, W2]);
 
       nn.gradientDescent(X, Y, W1, W2).then(function(data) {
@@ -328,8 +332,8 @@ describe('Autoencoder', function() {
     });
 
     it("should call costFunction_Derivative() while running gradientDescent()", function(done) {
-      var success = true;
-      var spy = sinon.spy(nn, "costFunction_Derivative");
+      let success = true;
+      let spy = sinon.spy(nn, "costFunction_Derivative");
       spy.withArgs(X, Y, W1, W2);
 
       nn.gradientDescent(X, Y, W1, W2).then(function(data) {
@@ -345,7 +349,7 @@ describe('Autoencoder', function() {
     });
 
     it("should call iteration_callback() while running gradientDescent()", function(done) {
-      var success = false;
+      let success = false;
 
       nn.gradientDescent(X, Y, W1, W2).then(function(data) {
         if (data[0] === callback_data.cost && (data[1] - 1) === callback_data.iteration) {
@@ -359,8 +363,8 @@ describe('Autoencoder', function() {
     });
 
     it("should call costFunction() while running gradientDescent()", function(done) {
-      var success = true;
-      var spy = sinon.spy(nn, "costFunction");
+      let success = true;
+      let spy = sinon.spy(nn, "costFunction");
       spy.withArgs(X, Y);
 
       nn.gradientDescent(X, Y, W1, W2).then(function(data) {
@@ -374,7 +378,7 @@ describe('Autoencoder', function() {
     });
 
     it("should correctly run gradientDescent()", function(done) {
-      var success = false;
+      let success = false;
 
       nn.gradientDescent(X, Y, W1, W2).then(function(data) {
 
@@ -388,7 +392,7 @@ describe('Autoencoder', function() {
     describe('when predicting the result', function() {
 
       it("should call setWeights()", function() {
-        var spy = sinon.spy(nn, "setWeights");
+        let spy = sinon.spy(nn, "setWeights");
         spy.withArgs(X);
         nn.predict_result(X);
         spy.restore();
@@ -396,7 +400,7 @@ describe('Autoencoder', function() {
       });
 
       it("should call forward_Propagation()", function() {
-        var spy = sinon.spy(nn, "forwardPropagation");
+        let spy = sinon.spy(nn, "forwardPropagation");
         spy.withArgs(X);
         nn.predict_result(X);
         spy.restore();
@@ -407,12 +411,12 @@ describe('Autoencoder', function() {
 
     describe('when optimizing using mini-batch gradient descent.', function() {
       
-      var callback = function(data) {
+      let callback = function(data) {
         callback_data = data;
         console.log("Iterations: "+callback_data.iteration, "Cost: "+callback_data.cost);
       };
 
-      var nn_mode1 = new Autoencoder({
+      let nn_mode1 = new Autoencoder({
         'hiddenLayerSize': 6,
         'p': 0.05,/*Sparsity parameter.*/
         'beta': 0.3,/*Weight of the sparsity term.*/
@@ -429,7 +433,7 @@ describe('Autoencoder', function() {
         'maximum_iterations': 500 /*optional maximum iterations to be allowed.*/
       });
 
-      var getInitParams_mode1 = nn_mode1.getInitParams();
+      let getInitParams_mode1 = nn_mode1.getInitParams();
 
       it("should correctly set parameters with mode: 1", function() {
         assert.deepStrictEqual(getInitParams_mode1.learningRate, 0.9);
@@ -450,9 +454,9 @@ describe('Autoencoder', function() {
 
 
       it("should successfuly train the Autoencoder.", function(done) {
-        var X_vals = (mathJS.random(mathJS.matrix([100, 10]), 0, 1));
-        var Y_vals = X_vals;
-        var success = false;
+        let X_vals = (mathJS.random(mathJS.matrix([100, 10]), 0, 1));
+        let Y_vals = X_vals;
+        let success = false;
 
         nn_mode1.train_network(X_vals, Y_vals).then(function(data) {
           if (data[0] === (1 / mathJS.exp(3)) || (data[1] - 1) === 500) {

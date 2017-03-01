@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Autoencoder</title>
+    <title>NeuralNetwork</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -38,7 +38,7 @@
                 
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
-                                <li><a href="../classes/Autoencoder.html">Autoencoder</a></li>
+                                <li><a href="../classes/NeuralNetwork.html">NeuralNetwork</a></li>
                             </ul>
                 
                 
@@ -76,7 +76,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>Autoencoder Class</h1>
+<h1>NeuralNetwork Class</h1>
 <div class="box meta">
 
 
@@ -89,14 +89,14 @@
 
 
 <div class="box intro">
-    <p>The Autoencoder class contains all the necessary logic to train data for multiclass classification using single layer Autoencoder.</p>
+    <p>The NeuralNetwork class contains all the necessary logic to train data for multiclass classification using single layer Neural Network.</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-<div id="method_Autoencoder" class="method item">
-    <h3 class="name"><code>Autoencoder</code></h3>
+<div id="method_NeuralNetwork" class="method item">
+    <h3 class="name"><code>NeuralNetwork</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
@@ -137,7 +137,7 @@
 
 
                     <div class="param-description">
-                        <p>Contains all the necessary parameters for the Autoencoder as listed below.</p>
+                        <p>Contains all the necessary parameters for the neural network as listed below.</p>
 
                     </div>
 
@@ -157,7 +157,27 @@
                                     <span class="type">Number</span>
 
                                 <div class="param-description">
-                                    <p>Optional threshold value for error.</p>
+                                    <p>Optional threshold value for cost. Defaults to 1/(e^3).</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name">regularization_parameter</code>
+                                    <span class="type">Number</span>
+
+                                <div class="param-description">
+                                    <p>Optional regularization parameter to prevent overfitting. Defaults to 0.01.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name">notify_count</code>
+                                    <span class="type">Number</span>
+
+                                <div class="param-description">
+                                    <p>Optional value to execute the iteration_callback after every x number of iterations. Defaults to 100.</p>
 
                                 </div>
 
@@ -183,31 +203,11 @@
 
                             </li>
                             <li class="param">
-                                    <code class="param-name">regularization_parameter</code>
-                                    <span class="type">Number</span>
-
-                                <div class="param-description">
-                                    <p>Optional regularization parameter to prevent overfitting.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name">notify_count</code>
-                                    <span class="type">Number</span>
-
-                                <div class="param-description">
-                                    <p>Optional value to execute the iteration_callback after every x number of iterations.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
                                     <code class="param-name">iteration_callback</code>
                                     <span class="type">Function</span>
 
                                 <div class="param-description">
-                                    <p>Optional callback that can be used for getting cost and iteration value on every notify count.</p>
+                                    <p>Optional callback that can be used for getting cost and iteration value on every notify count. Defaults to empty function.</p>
 
                                 </div>
 
@@ -217,7 +217,7 @@
                                     <span class="type">Number</span>
 
                                 <div class="param-description">
-                                    <p>Optional value for number of hidden layer units.</p>
+                                    <p>Value for number of hidden layer units.</p>
 
                                 </div>
 
@@ -227,7 +227,7 @@
                                     <span class="type">Number</span>
 
                                 <div class="param-description">
-                                    <p>Optional maximum iterations to be allowed before the optimization is complete.</p>
+                                    <p>Optional maximum iterations to be allowed before the optimization is complete. Defaults to 1000.</p>
 
                                 </div>
 
@@ -237,7 +237,7 @@
                                     <span class="type">Object</span>
 
                                 <div class="param-description">
-                                    <p>Optional optimzation(gradient descent) mode. For batch gradient descent optimization_mode =  {'mode': 0} and for mini-batch gradient descent optimization_mode =  {'mode': 1, 'batch_size': (specify  required size) }.</p>
+                                    <p>Optional optimization mode for type of gradient descent. {mode:1, 'batch_size': <your size>} for mini-batch and {mode: 0} for batch. Defaults to batch gradient descent.</p>
 
                                 </div>
 
@@ -300,7 +300,15 @@
 
                             </li>
                             <li class="index-item method">
+                                <a href="#method_setBias">setBias</a>
+
+                            </li>
+                            <li class="index-item method">
                                 <a href="#method_setWeights">setWeights</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_shuffleMatrix">shuffleMatrix</a>
 
                             </li>
                             <li class="index-item method">
@@ -337,7 +345,13 @@
                         <code>Y</code>
                 </li>
                 <li class="arg">
-                        <code>algorithm_mode</code>
+                        <code>W1</code>
+                </li>
+                <li class="arg">
+                        <code>W2</code>
+                </li>
+                <li class="arg">
+                        <code>iteration_count</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -355,7 +369,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/Autoencoder.js.html#l160"><code>Autoencoder.js:160</code></a>
+        <a href="../files/Autoencoder.js.html#l183"><code>Autoencoder.js:183</code></a>
         </p>
 
 
@@ -394,12 +408,34 @@
 
                 </li>
                 <li class="param">
-                        <code class="param-name">algorithm_mode</code>
+                        <code class="param-name">W1</code>
+                        <span class="type">Matrix</span>
+
+
+                    <div class="param-description">
+                        <p>The matrix representing the weights for layer 1.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">W2</code>
+                        <span class="type">Matrix</span>
+
+
+                    <div class="param-description">
+                        <p>The matrix representing the weights for layer 2.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">iteration_count</code>
                         <span class="type">Number</span>
 
 
                     <div class="param-description">
-                        <p>The current algorithm mode (training: 0).</p>
+                        <p>Is the iteration count since the training started.</p>
 
                     </div>
 
@@ -436,6 +472,9 @@
                 <li class="arg">
                         <code>W2</code>
                 </li>
+                <li class="arg">
+                        <code>iteration_count</code>
+                </li>
             </ul><span class="paren">)</span>
         </div>
 
@@ -452,7 +491,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/Autoencoder.js.html#l225"><code>Autoencoder.js:225</code></a>
+        <a href="../files/Autoencoder.js.html#l223"><code>Autoencoder.js:223</code></a>
         </p>
 
 
@@ -512,6 +551,17 @@
                     </div>
 
                 </li>
+                <li class="param">
+                        <code class="param-name">iteration_count</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>Is the iteration count since the training started.</p>
+
+                    </div>
+
+                </li>
             </ul>
         </div>
 
@@ -520,7 +570,7 @@
 
             <div class="returns-description">
                         <span class="type">Array</span>:
-                    <p>Returns the resultant gradients with respect to layer 1: dJdW1 and layer 2: dJdW2 of the Autoencoder.</p>
+                    <p>Returns the resultant gradients with respect to layer 1: dJdW1 and layer 2: dJdW2 of the Neural Network.</p>
 
             </div>
         </div>
@@ -541,6 +591,12 @@
                 <li class="arg">
                         <code>W2</code>
                 </li>
+                <li class="arg">
+                        <code>bias_l1</code>
+                </li>
+                <li class="arg">
+                        <code>bias_l2</code>
+                </li>
             </ul><span class="paren">)</span>
         </div>
 
@@ -557,7 +613,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/Autoencoder.js.html#l103"><code>Autoencoder.js:103</code></a>
+        <a href="../files/Autoencoder.js.html#l104"><code>Autoencoder.js:104</code></a>
         </p>
 
 
@@ -565,7 +621,7 @@
     </div>
 
     <div class="description">
-        <p>This method is responsible for the forwardPropagation in the Autoencoder.</p>
+        <p>This method is responsible for the forwardPropagation in the Neural Network.</p>
 
     </div>
 
@@ -602,6 +658,28 @@
 
                     <div class="param-description">
                         <p>The matrix representing the weights for layer 2.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">bias_l1</code>
+                        <span class="type">Matrix</span>
+
+
+                    <div class="param-description">
+                        <p>The matrix representing the bias for layer 1.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">bias_l2</code>
+                        <span class="type">Matrix</span>
+
+
+                    <div class="param-description">
+                        <p>The matrix representing the bias for layer 2.</p>
 
                     </div>
 
@@ -697,7 +775,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/Autoencoder.js.html#l311"><code>Autoencoder.js:311</code></a>
+        <a href="../files/Autoencoder.js.html#l336"><code>Autoencoder.js:336</code></a>
         </p>
 
 
@@ -790,7 +868,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/Autoencoder.js.html#l124"><code>Autoencoder.js:124</code></a>
+        <a href="../files/Autoencoder.js.html#l146"><code>Autoencoder.js:146</code></a>
         </p>
 
 
@@ -839,7 +917,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/Autoencoder.js.html#l404"><code>Autoencoder.js:404</code></a>
+        <a href="../files/Autoencoder.js.html#l487"><code>Autoencoder.js:487</code></a>
         </p>
 
 
@@ -889,6 +967,9 @@
                 <li class="arg">
                         <code>weights</code>
                 </li>
+                <li class="arg">
+                        <code>biases</code>
+                </li>
             </ul><span class="paren">)</span>
         </div>
 
@@ -905,7 +986,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/Autoencoder.js.html#l292"><code>Autoencoder.js:292</code></a>
+        <a href="../files/Autoencoder.js.html#l302"><code>Autoencoder.js:302</code></a>
         </p>
 
 
@@ -913,7 +994,7 @@
     </div>
 
     <div class="description">
-        <p>This method is responsible for saving the trained weights of the Autoencoder.</p>
+        <p>This method is responsible for saving the trained weights and biases of the Neural Network.</p>
 
     </div>
 
@@ -923,11 +1004,22 @@
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">weights</code>
-                        <span class="type">Array</span>
+                        <span class="type">Matrix</span>
 
 
                     <div class="param-description">
-                        <p>The weights of the layer1 and layer2 of the Autoencoder.</p>
+                        <p>The weights of the layer1 and layer2 of the Neural Network.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">biases</code>
+                        <span class="type">Matrix</span>
+
+
+                    <div class="param-description">
+                        <p>The biases of the layer1 and layer2 of the Neural Network.</p>
 
                     </div>
 
@@ -944,6 +1036,74 @@
 
             </div>
         </div>
+
+
+</div>
+<div id="method_setBias" class="method item">
+    <h3 class="name"><code>setBias</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>bias_l1</code>
+                </li>
+                <li class="arg">
+                        <code>bias_l2</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/Autoencoder.js.html#l323"><code>Autoencoder.js:323</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>This method is responsible for setting bias for layers 1 and 2.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">bias_l1</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>The bias for layer1.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">bias_l2</code>
+                        <span class="type">Number</span>
+
+
+                    <div class="param-description">
+                        <p>The bias for layer 2.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
 
 
 </div>
@@ -965,7 +1125,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/Autoencoder.js.html#l419"><code>Autoencoder.js:419</code></a>
+        <a href="../files/Autoencoder.js.html#l503"><code>Autoencoder.js:503</code></a>
         </p>
 
 
@@ -973,7 +1133,7 @@
     </div>
 
     <div class="description">
-        <p>This method is responsible for setting weights of the Autoencoder.</p>
+        <p>This method is responsible for setting weights and biases of the Neural Network from storage.</p>
 
     </div>
 
@@ -983,10 +1143,78 @@
 
             <div class="returns-description">
                         <span class="type">Object</span>:
-                    <p>Returns a resolved promise after successfuly setting weights.</p>
+                    <p>Returns a resolved promise after successfuly setting weights and biases.</p>
 
             </div>
         </div>
+
+
+</div>
+<div id="method_shuffleMatrix" class="method item">
+    <h3 class="name"><code>shuffleMatrix</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>matrix</code>
+                </li>
+                <li class="arg">
+                        <code>matrix2</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/Autoencoder.js.html#l430"><code>Autoencoder.js:430</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>This method randomizes matrix element order in-place using Durstenfeld shuffle algorithm.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">matrix</code>
+                        <span class="type">Matrix</span>
+
+
+                    <div class="param-description">
+                        <p>The first matrix to be shuffled.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">matrix2</code>
+                        <span class="type">Matrix</span>
+
+
+                    <div class="param-description">
+                        <p>The second matrix to be shuffled.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
 
 
 </div>
@@ -1080,7 +1308,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/Autoencoder.js.html#l143"><code>Autoencoder.js:143</code></a>
+        <a href="../files/Autoencoder.js.html#l165"><code>Autoencoder.js:165</code></a>
         </p>
 
 
@@ -1149,7 +1377,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/Autoencoder.js.html#l372"><code>Autoencoder.js:372</code></a>
+        <a href="../files/Autoencoder.js.html#l453"><code>Autoencoder.js:453</code></a>
         </p>
 
 

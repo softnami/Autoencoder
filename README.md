@@ -33,14 +33,14 @@ var an = new window.Autoencoder({
         'p': 0.05,/*Sparsity parameter.*/
         'beta': 0.3,/*Weight of the sparsity term.*/
         'learningRate': 0.9,
-        'threshold_value': undefined /*optional threshold value*/ ,
-        'regularization_parameter': 0.001 /*optional regularization parameter to prevent overfitting.*/ ,
+        'threshold_value': undefined /* Optional threshold value for cost. Defaults to 1/(e^3). */,
+        'regularization_parameter': 0.001 /*Optional regularization parameter to prevent overfitting. Defaults to 0.01.*/ ,
         'optimization_mode': {
           'mode': 0
-        } /*optional optimization mode for type of gradient descent. {'mode': 0} for batch gradient descent and     {'mode':1, 'batch_size': <your batch size>} for mini-batch gradient descent.*/ ,
-        'notify_count': 10 /*optional value to execute the callback after every x number of iterations.*/ ,
-        'iteration_callback': callback /*optional callback that can be used for getting cost and iteration value on every notify count.*/ ,
-        'maximum_iterations': 500 /*optional maximum iterations to be allowed.*/
+        } /*Optional optimization mode for type of gradient descent. {mode:1, 'batch_size': <your size>} for mini-batch and {mode: 0} for batch. Defaults to batch gradient descent.*/ ,
+        'notify_count': 10 /*Optional value to execute the iteration_callback after every x number of iterations. Defaults to 100.*/ ,
+        'iteration_callback': callback /*Optional callback that can be used for getting cost and iteration value on every notify count. Defaults to empty function.*/ ,
+        'maximum_iterations': 500 /*Optional maximum iterations to be allowed before the optimization is complete. Defaults to 1000.*/
       });
 
 an.train_network([

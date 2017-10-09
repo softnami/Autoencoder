@@ -3,7 +3,7 @@ Copyright (c) 2016-2017 Hussain Mir Ali
 **/
 "use strict";
 
-var window_object = (function(g){
+let window_object = (function(g){
       return g;
   }(this));
 
@@ -87,7 +87,7 @@ getInitParams() {
  */
 
 sigmoid(z) {
-  var scope = {
+  let scope = {
       z: (typeof(z) === "number") ? this.MathJS.matrix([
         [z]
       ]) : z
@@ -105,15 +105,15 @@ sigmoid(z) {
  *This method is responsible for the forwardPropagation in the Neural Network.
  *
  * @method forwardPropagation 
- * @param {matrix} X The input matrix representing the features.
+ * @param {matrix} _X The input matrix representing the features.
  * @param {matrix} W1 The matrix representing the weights for layer 1.
  * @param {matrix} W2 The matrix representing the weights for layer 2.
  * @param {matrix} bias_l1 The matrix representing the bias for layer 1.
  * @param {matrix} bias_l2 The matrix representing the bias for layer 2.
  * @return {matrix} Returns the resultant ouput of forwardPropagation.
  */
-forwardPropagation(X, W1, W2, bias_l1, bias_l2) {
-  var y_result, X = this.MathJS.matrix(X) || this.x,
+forwardPropagation(_X, W1, W2, bias_l1, bias_l2) {
+  let y_result, X = (_X===undefined?this.x:this.MathJS.matrix(_X)),
     scope = {};
   this.W1 = W1 || this.W1;
   this.W2 = W2 || this.W2;
@@ -150,7 +150,7 @@ forwardPropagation(X, W1, W2, bias_l1, bias_l2) {
  * @return {Number} sum Returns the Kullback-Leibler sum.
  */
 kullback_leibler_sum() {
-  var scope={}, sum, kl_matrix, sum;
+  let scope={}, sum, kl_matrix;
   scope.ones = this.MathJS.ones([this.a2.size()[1]]);
   scope.p = this.p;
   scope.p = this.MathJS.eval('ones.*p',scope);
@@ -170,7 +170,7 @@ kullback_leibler_sum() {
  * @return {matrix} Returns the elementwise sigmoid derivative of the input matrix.
  */
 sigmoid_Derivative(z) {
-  var scope = {
+  let scope = {
       z: z
     },
     sigmoid_Derivative;
@@ -192,8 +192,8 @@ sigmoid_Derivative(z) {
  * @return {Number} Returns the resultant cost.
  */
 costFunction(X, Y, W1, W2,iteration_count) {
-  var J, batch_size;
-  var scope = {};
+  let J, batch_size;
+  let scope = {};
 
   scope.y = this.MathJS.matrix(Y);
   scope.x = this.MathJS.matrix(X);
@@ -224,29 +224,33 @@ costFunction(X, Y, W1, W2,iteration_count) {
  *This method is responsible for the costFunction_Derivative, i.e. gradient of error with respect to weights.
  *
  * @method costFunction_Derivative 
- * @param {matrix} X The input matrix representing the features.
- * @param {matrix} Y The output matrix corresponding to training data.
+ * @param {matrix} _X The input matrix representing the features.
+ * @param {matrix} _Y The output matrix corresponding to training data.
  * @param {matrix} W1 The matrix representing the weights for layer 1.
  * @param {matrix} W2 The matrix representing the weights for layer 2.
  * @param {Number} iteration_count Is the iteration count since the training started.
  * @return {Array} Returns the resultant gradients with respect to layer 1: dJdW1 and layer 2: dJdW2 of the Neural Network.
  */
 
-costFunction_Derivative(X, Y, W1, W2, iteration_count) {
+costFunction_Derivative(_X, _Y, W1, W2, iteration_count) {
+
+  let X = _X;
+  let Y = _Y;
+
   if (this.optimization_mode.mode === 1) {
 
-    this.x = X || this.x;
-    this.y = Y || this.y;
+    this.x = _X || this.x;
+    this.y = _Y || this.y;
 
-    var batch_size = this.optimization_mode.batch_size;
-    var X = this.MathJS.matrix(this.x._data.slice(batch_size * iteration_count, batch_size + (batch_size * iteration_count)));
-    var Y = this.MathJS.matrix(this.y._data.slice(batch_size * iteration_count, batch_size + (batch_size * iteration_count)));
+    let batch_size = this.optimization_mode.batch_size;
+    X = this.MathJS.matrix(this.x._data.slice(batch_size * iteration_count, batch_size + (batch_size * iteration_count)));
+    Y = this.MathJS.matrix(this.y._data.slice(batch_size * iteration_count, batch_size + (batch_size * iteration_count)));
 
   }
 
   this.x = X || this.x;
   this.y_result = this.forwardPropagation(this.x, undefined, undefined, undefined, undefined);
-  var scope = {};
+  let scope = {};
   scope.y_result = this.y_result;
   scope.y = Y || this.y;
   scope.x = X || this.x;
@@ -258,8 +262,8 @@ costFunction_Derivative(X, Y, W1, W2, iteration_count) {
   scope.W1 = W1 || this.W1;
   scope.m = scope.x.size()[0];
 
-  var del_3 = this.MathJS.eval('diff.*sigmoid_Derivative_z3', scope);
-  var dJdW2 = this.MathJS.multiply(this.MathJS.transpose(this.a2), del_3);
+  let del_3 = this.MathJS.eval('diff.*sigmoid_Derivative_z3', scope);
+  let dJdW2 = this.MathJS.multiply(this.MathJS.transpose(this.a2), del_3);
   scope.dJdW2 = dJdW2;
   scope.regularization_term_dJdW2 = this.MathJS.eval('W2.*regularization_param', scope);
 
@@ -275,7 +279,7 @@ costFunction_Derivative(X, Y, W1, W2, iteration_count) {
   scope.kl_term = this.MathJS.eval('(((p./p_prime).*-1)+((1-p)./(1-p_prime))).*beta',scope);
   scope.kl_matrix = [];
 
-  for(var i=0; i<scope.arrA.size()[0]; i++){
+  for(let i=0; i<scope.arrA.size()[0]; i++){
     scope.kl_matrix.push(scope.kl_term);
   }
 
@@ -283,8 +287,8 @@ costFunction_Derivative(X, Y, W1, W2, iteration_count) {
   scope.arrA = this.MathJS.eval('arrA+kl_matrix',scope);
   scope.arrB = this.sigmoid_Derivative(this.z2);
 
-  var del_2 = this.MathJS.eval('arrA.*arrB', scope);
-  var dJdW1 = this.MathJS.multiply(this.MathJS.transpose(scope.x), del_2);
+  let del_2 = this.MathJS.eval('arrA.*arrB', scope);
+  let dJdW1 = this.MathJS.multiply(this.MathJS.transpose(scope.x), del_2);
 
   scope.dJdW1 = dJdW1;
   scope.regularization_term_dJdW1 = this.MathJS.eval('W1.*regularization_param', scope);
@@ -308,7 +312,7 @@ costFunction_Derivative(X, Y, W1, W2, iteration_count) {
  * @return {Boolean} Returns true after succesfuly saving the weights.
  */
  saveWeights(weights, biases) {
-  var defered = this.q.defer();
+  let defered = this.q.defer();
   if (Object.keys(window_object).length === 0) {
     global.localStorage.setItem("Weights", JSON.stringify(weights));
     global.localStorage.setItem("Biases", JSON.stringify(biases));
@@ -339,17 +343,17 @@ setBias(bias_l1, bias_l2) {
  * @method gradientDescent
  * @param {matrix} X The input matrix representing the features.
  * @param {matrix} Y The output matrix corresponding to training data.
- * @param {matrix} W1 The matrix representing the weights for layer 1.
- * @param {matrix} W2 The matrix representing the weights for layer 2.
+ * @param {matrix} _W1 The matrix representing the weights for layer 1.
+ * @param {matrix} _W2 The matrix representing the weights for layer 2.
  * @return {Object} Returns a resolved promise with iteration and cost data on successful completion of optimization. 
  */
- gradientDescent(X, Y, W1, W2) {
-  var gradient = new Array(2),
+ gradientDescent(X, Y, _W1, _W2) {
+  let gradient = new Array(2),
     self = this,
     x = X || this.x,
     y = Y || this.y,
-    W1 = W1,
-    W2 = W2,
+    W1 = _W1,
+    W2 = _W2,
     cost,
     scope = {},
     defered = this.q.defer(),
@@ -408,13 +412,13 @@ setBias(bias_l1, bias_l2) {
         if(this.optimization_mode.batch_size + (this.optimization_mode.batch_size  * inner_iterations)>=x.size()[0]){
            inner_iterations  = 0;
            epochs++;
-           var shufflmatrx = this.shuffleMatrix(x, y);
+           let shufflmatrx = this.shuffleMatrix(x, y);
            x = shufflmatrx[0];
            y = shufflmatrx[1];
         }
     }if(this.optimization_mode.mode === 0){
            epochs++;
-           var shufflmatrx = this.shuffleMatrix(x, y);
+           let shufflmatrx = this.shuffleMatrix(x, y);
            x = shufflmatrx[0];
            y = shufflmatrx[1];
     }
@@ -435,14 +439,14 @@ setBias(bias_l1, bias_l2) {
 * @param {Matrix} matrix2 The second matrix to be shuffled.
 */
 shuffleMatrix(matrix, matrix2){
-            for (var i = matrix.length - 1; i > 0; i--) {
-                var j = Math.floor(Math.random() * (i + 1));
+            for (let i = matrix.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
                 
-                var temp = matrix[i];
+                let temp = matrix[i];
                 matrix[i] = matrix[j];
                 matrix[j] = temp;
 
-                var temp2 = matrix2[i];
+                let temp2 = matrix2[i];
                 matrix2[i] = matrix2[j];
                 matrix2[j] = temp2;
             }
@@ -493,7 +497,7 @@ shuffleMatrix(matrix, matrix2){
  */
 
 predict_result(X) {
-  var y_result;
+  let y_result;
   this.setWeights();
   y_result = this.forwardPropagation(X, undefined, undefined, undefined, undefined);
   return y_result;
@@ -507,8 +511,8 @@ predict_result(X) {
  * @return {Object} Returns a resolved promise after successfuly setting weights and biases.
  */
  setWeights() {
-  var self = this;
-  var weights, biases;
+  let self = this;
+  let weights, biases;
   if (Object.keys(window_object).length === 0) {
     weights = JSON.parse(global.localStorage.getItem("Weights"));
     biases = JSON.parse(global.localStorage.getItem("Biases"));

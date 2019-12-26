@@ -1,7 +1,7 @@
 # Autoencoder 
 ### [Author: Hussain Mir Ali]
 
-![Autoencoder](https://commons.wikimedia.org/wiki/File:Autoencoder_schema.png)
+![Autoencoder](https://upload.wikimedia.org/wikipedia/commons/3/37/Autoencoder_schema.png)
 
 An autoencoder neural network with single hidden layer and multiclass ouput. This project has been written in JavaScript. 
 

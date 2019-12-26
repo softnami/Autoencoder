@@ -1,6 +1,7 @@
 'use strict';
 
-let Autoencoder = require('../Autoencoder');
+import {Autoencoder} from '../Autoencoder';
+
 let assert = require('assert');
 let mathJS = require('mathjs');
 let sinon = require('sinon');

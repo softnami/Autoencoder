@@ -1,12 +1,7 @@
 /**
-Copyright (c) 2016-2017 Hussain Mir Ali
+Copyright (c) 2016-2020 Hussain Mir Ali
 **/
-"use strict";
-
-let window_object = (function(g){
-      return g;
-  }(this));
-
+import * as math from 'mathjs';
 /**
  * The NeuralNetwork class contains all the necessary logic to train data for multiclass classification using single layer Neural Network.
  *
@@ -25,34 +20,26 @@ let window_object = (function(g){
  * @param {Object} args.optimization_mode  Optional optimization mode for type of gradient descent. {mode:1, 'batch_size': <your size>} for mini-batch and {mode: 0} for batch. Defaults to batch gradient descent.
   **/
 
-class Autoencoder {
+export class Autoencoder {
 
   constructor(args){
-   if(Object.keys(window_object).length === 0){
-        this.MathJS = require('mathjs');
-        this.q = require('q');
-    }
-    else{
-        this.MathJS = math;
-        this.q = Q;
-    }
-
-  this.initArgs = args;
-  this.threshold = args.threshold || (1 / this.MathJS.exp(3));
-  this.algorithm_mode = 0;
-  this.iteration_callback = args.iteration_callback || function(){};
-  this.hiddenLayerSize = args.hiddenLayerSize;
-  this.regularization_param = args.regularization_param || 0.01;
-  this.learningRate = args.learningRate || 0.5;
-  this.p_prime = [];
-  this.p = args.p;
-  this.beta = args.beta;
-  this.optimization_mode = (args.optimization_mode === undefined) ? {
-    'mode': 0
-  } : args.optimization_mode;
-  this.maximum_iterations = args.maximum_iterations || 1000;
-  this.batch_iteration_count = 0;
-  this.notify_count = args.notify_count || 100;
+    this.MathJS = math;
+    this.initArgs = args;
+    this.threshold = args.threshold || (1 / this.MathJS.exp(3));
+    this.algorithm_mode = 0;
+    this.iteration_callback = args.iteration_callback || function(){};
+    this.hiddenLayerSize = args.hiddenLayerSize;
+    this.regularization_param = args.regularization_param || 0.01;
+    this.learningRate = args.learningRate || 0.5;
+    this.p_prime = [];
+    this.p = args.p;
+    this.beta = args.beta;
+    this.optimization_mode = (args.optimization_mode === undefined) ? {
+      'mode': 0
+    } : args.optimization_mode;
+    this.maximum_iterations = args.maximum_iterations || 1000;
+    this.batch_iteration_count = 0;
+    this.notify_count = args.notify_count || 100;
 }
 
 /**
@@ -311,15 +298,10 @@ costFunction_Derivative(_X, _Y, W1, W2, iteration_count) {
  * @param {Matrix} biases The biases of the layer1 and layer2 of the Neural Network.
  * @return {Boolean} Returns true after succesfuly saving the weights.
  */
- saveWeights(weights, biases) {
-  let defered = this.q.defer();
-  if (Object.keys(window_object).length === 0) {
-    global.localStorage.setItem("Weights", JSON.stringify(weights));
-    global.localStorage.setItem("Biases", JSON.stringify(biases));
-  } else {
-    localStorage.setItem("Weights", JSON.stringify(weights));
-    localStorage.setItem("Biases", JSON.stringify(biases));
-  }
+ saveWeights(weights, biases) {  
+  localStorage.setItem("Weights", JSON.stringify(weights));
+  localStorage.setItem("Biases", JSON.stringify(biases));
+  
   console.log("\nWeights were successfuly saved.");
   return true;
 }
@@ -349,14 +331,12 @@ setBias(bias_l1, bias_l2) {
  */
  gradientDescent(X, Y, _W1, _W2) {
   let gradient = new Array(2),
-    self = this,
     x = X || this.x,
     y = Y || this.y,
     W1 = _W1,
     W2 = _W2,
     cost,
     scope = {},
-    defered = this.q.defer(),
     i = 1, inner_iterations =0, epochs = 0;
 
   console.log('Training ...\n');
@@ -397,10 +377,10 @@ setBias(bias_l1, bias_l2) {
         'cost': cost,
         'epochs':epochs,
         'iteration': i /*iteration count*/ ,
-        'Weights_Layer1': self.W1,
-        'Weights_Layer2': self.W2,
-        'Bias_Layer1': self.bias_l1,
-        'Bias_Layer2': self.bias_l2,
+        'Weights_Layer1': this.W1,
+        'Weights_Layer2': this.W2,
+        'Bias_Layer1': this.bias_l1,
+        'Bias_Layer2': this.bias_l2,
         'gradient': gradient
       }]); //notify cost values for diagnosing the performance of learning algorithm.
     }
@@ -425,8 +405,10 @@ setBias(bias_l1, bias_l2) {
 
     if (i> this.maximum_iterations || cost <= (this.threshold)) {
       this.saveWeights([this.W1, this.W2],[this.bias_l1, this.bias_l2]);
-      defered.resolve([cost, i]);
-      return defered.promise;
+
+      return new Promise((resolve, reject)=>{
+        resolve([cost, i]);
+      });
     }
   }
 }
@@ -439,18 +421,18 @@ setBias(bias_l1, bias_l2) {
 * @param {Matrix} matrix2 The second matrix to be shuffled.
 */
 shuffleMatrix(matrix, matrix2){
-            for (let i = matrix.length - 1; i > 0; i--) {
-                let j = Math.floor(Math.random() * (i + 1));
-                
-                let temp = matrix[i];
-                matrix[i] = matrix[j];
-                matrix[j] = temp;
+  for (let i = matrix.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
+      
+      let temp = matrix[i];
+      matrix[i] = matrix[j];
+      matrix[j] = temp;
 
-                let temp2 = matrix2[i];
-                matrix2[i] = matrix2[j];
-                matrix2[j] = temp2;
-            }
-            return [matrix, matrix2];
+      let temp2 = matrix2[i];
+      matrix2[i] = matrix2[j];
+      matrix2[j] = temp2;
+  }
+  return [matrix, matrix2];
   }
 
 
@@ -508,32 +490,21 @@ predict_result(X) {
  *This method is responsible for setting weights and biases of the Neural Network from storage.
  *
  * @method setWeights 
- * @return {Object} Returns a resolved promise after successfuly setting weights and biases.
+ * @return {Array} Returns an array after successfuly setting weights and biases.
  */
  setWeights() {
-  let self = this;
   let weights, biases;
-  if (Object.keys(window_object).length === 0) {
-    weights = JSON.parse(global.localStorage.getItem("Weights"));
-    biases = JSON.parse(global.localStorage.getItem("Biases"));
-  } else {
-    weights = JSON.parse(localStorage.getItem("Weights"));
-    biases = JSON.parse(localStorage.getItem("Biases"));
-  }
+ 
+  weights = JSON.parse(localStorage.getItem("Weights"));
+  biases = JSON.parse(localStorage.getItem("Biases"));
 
-  self.W1 = this.MathJS.matrix(weights[0].data);
-  self.W2 = this.MathJS.matrix(weights[1].data);
+  this.W1 = this.MathJS.matrix(weights[0].data);
+  this.W2 = this.MathJS.matrix(weights[1].data);
 
-  self.bias_l1 = this.MathJS.matrix(biases[0].data);
-  self.bias_l2 = this.MathJS.matrix(biases[1].data);
+  this.bias_l1 = this.MathJS.matrix(biases[0].data);
+  this.bias_l2 = this.MathJS.matrix(biases[1].data);
 
-  return [self.W1._data, self.W2._data, self.bias_l1, self.bias_l2];
+  return [this.W1._data, this.W2._data, this.bias_l1, this.bias_l2];
 }
 
-}
-
-if(Object.keys(window_object).length === 0){
-    module.exports = Autoencoder;
-}else{
-    window['Autoencoder'] = Autoencoder;
 }

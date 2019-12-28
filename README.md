@@ -70,3 +70,9 @@ autoencoder.train_network([
 ## Documentation
 *  The documentation is available in the 'out' folder of this project. Open the 'index.html' file under the 'out' folder with Crhome or Firefox.
 *  To generate the documentation run 'yuidoc .' command in the main directory of this project.
+
+## Theory and Background:
+* Find more about how autoencoders work and the theory behind it. Visit [ufdl.standford.edu](http://ufldl.stanford.edu/tutorial/unsupervised/Autoencoders/)
+
+## 💡 Practice Daily Coding 
+* Practice coding questions from top companies daily, visit [softnami.com/dailycoding](https://www.softnami.com/dailycoding/signup.html?ref=npm)

@@ -1,6 +1,6 @@
 {
   "name": "@softnami/autoencoder",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A JavaScript module for autoencoder network in the browser. ",
   "main": "Autoencoder.js",
   "dependencies": {
@@ -37,6 +37,7 @@
   },
   "homepage": "https://github.com/softnami/Autoencoder#readme",
   "scripts": {
+    "postinstall": "node ./postinstall.js",
     "test": "./node_modules/.bin/mocha --require ./node_modules/@babel/register --timeout 30000"
   }
 }
